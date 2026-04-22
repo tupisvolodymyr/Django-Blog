@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center align-items-center" style="min-height: 60vh;">
+        <div class="col-md-6 col-lg-5">
+            <div class="border border-dark bg-white p-4 p-md-5">
+
+                <h1 class="h2 fw-bold mb-4 text-uppercase text-center" style="letter-spacing: -0.02em;">
+                    Підтвердження
+                </h1>
+
+                <div class="text-center mb-5">
+                    <p class="small text-muted text-uppercase mb-3" style="letter-spacing: 0.1em;">Ви впевнені, що хочете видалити цей запис?</p>
+
+                    <h2 class="h4 fw-bold mb-4">"{{ post.title }}"</h2>
+
+                    <div class="p-3 border border-dark mb-4" style="background-color: #fffafa;">
+                        <p style="color: #8b0000; font-size: 0.75rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; margin: 0;">
+                            ! Цю дію неможливо буде скасувати. Запис буде видалено назавжди.
+                        </p>
+                    </div>
+                </div>
+
+                <form method="post">
+                    {% csrf_token %}
+
+                    <button type="submit" class="btn-delete-final w-100 mb-3">
+                        ТАК, ВИДАЛИТИ НАЗАВЖДИ
+                    </button>
+
+                    <a href="{% url 'user_dashboard' %}" class="d-block text-center text-dark text-decoration-none small fw-bold text-uppercase" style="letter-spacing: 0.1em;">
+                        <span class="border-bottom border-dark pb-1">Скасувати та повернутися</span>
+                    </a>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Спеціальна кнопка для фінального видалення */
+    .btn-delete-final {
+        background-color: #000000;
+        color: #ffffff;
+        border: 2px solid #000000;
+        padding: 15px;
+        font-size: 0.75rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.15em;
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
+
+    .btn-delete-final:hover {
+        background-color: #8b0000; /* Темно-червоний при наведенні для небезпеки */
+        border-color: #8b0000;
+    }
+
+    /* Адаптація для мобільних */
+    @media (max-width: 576px) {
+        .border-dark { border-width: 1px !important; }
+    }
+</style>
+{% endblock %}

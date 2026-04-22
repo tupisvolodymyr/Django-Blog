@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Журнал{% endblock %}</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        /* ГЛОБАЛЬНІ СТИЛІ */
+        html, body {
+            background-color: #ffffff !important;
+            color: #000000 !important;
+            margin: 0;
+            padding: 0;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* Сітка на фоні */
+        body {
+            background-image: linear-gradient(#f9f9f9 1px, transparent 1px),
+                              linear-gradient(90deg, #f9f9f9 1px, transparent 1px);
+            background-size: 50px 50px;
+        }
+
+        /* Навігація */
+        .navbar {
+            background-color: #ffffff !important;
+            border-bottom: 2px solid #000000;
+            padding: 15px 0;
+            z-index: 1000;
+            position: relative;
+        }
+
+        .logo-svg {
+            width: 24px; height: 24px; fill: #000000;
+        }
+
+        .nav-link {
+            color: #000000 !important;
+            text-transform: uppercase;
+            font-size: 0.7rem;
+            letter-spacing: 0.1em;
+            font-weight: 600;
+            background: none;
+            border: none;
+        }
+
+        .content-wrapper {
+            min-height: 80vh;
+        }
+
+        /* Монохромна кнопка */
+        .btn-minimal {
+            background-color: #000000;
+            color: #ffffff !important;
+            border: none;
+            padding: 8px 20px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            display: inline-block;
+            text-decoration: none;
+        }
+
+        .btn-minimal:hover { opacity: 0.8; }
+
+        footer {
+            border-top: 2px solid #000000;
+            padding: 50px 0;
+            background: #ffffff;
+            font-size: 0.7rem;
+            letter-spacing: 0.2em;
+        }
+
+        /* Скидання стандартних кольорів */
+        *:focus { outline: none !important; box-shadow: none !important; }
+        a { color: inherit !important; text-decoration: none !important; }
+    </style>
+</head>
+<body>
+
+<nav class="navbar navbar-expand navbar-light">
+    <div class="container">
+        <a class="navbar-brand" href="{% url 'post_list' %}">
+            <svg class="logo-svg" viewBox="0 0 24 24">
+                <rect x="2" y="2" width="20" height="20" stroke="black" stroke-width="3" fill="none"/>
+            </svg>
+        </a>
+        <div class="ms-auto d-flex align-items-center">
+            <a class="nav-link px-3" href="{% url 'post_list' %}">Архіви</a>
+            {% if user.is_authenticated %}
+                <a class="nav-link px-3" href="{% url 'user_dashboard' %}">Управління</a>
+
+                <form action="{% url 'logout' %}" method="post" class="d-inline">
+                    {% csrf_token %}
+                    <button type="submit" class="nav-link px-3">Вийти</button>
+                </form>
+
+                <a class="btn-minimal ms-3" href="{% url 'post_create' %}">Додати +</a>
+            {% else %}
+                <a class="nav-link px-3" href="{% url 'login' %}">Вхід</a>
+                <a class="btn-minimal ms-3" href="{% url 'register' %}">Створити акаунт</a>
+            {% endif %}
+        </div>
+    </div>
+</nav>
+
+<div class="content-wrapper">
+    {% block content %}{% endblock %}
+</div>
+
+<footer class="text-center">
+    <p>СИСТЕМНИЙ ДИЗАЙН &bull; 2026</p>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

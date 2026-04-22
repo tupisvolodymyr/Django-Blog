@@ -1,0 +1,104 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center align-items-center" style="min-height: 65vh;">
+        <div class="col-md-5 col-lg-4">
+            <div class="border border-dark bg-white p-4 p-md-5">
+
+                <h1 class="h2 fw-bold mb-4 text-uppercase text-center" style="letter-spacing: -0.02em;">
+                    Вхід
+                </h1>
+
+                {% if request.GET.next %}
+                    <div class="mb-4 p-3 border border-dark text-center" style="background-color: #fffafa;">
+                        <div style="color: #8b0000; font-size: 0.7rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; line-height: 1.4;">
+                            ! Потрібна авторизація для доступу до цієї сторінки
+                        </div>
+                    </div>
+                {% endif %}
+
+                {% if form.non_field_errors %}
+                    <div class="mb-4 p-3 border border-dark bg-light text-center">
+                        {% for error in form.non_field_errors %}
+                            <div style="color: #8b0000; font-size: 0.75rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em;">
+                                ! {{ error|striptags }}
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+
+                <form method="post">
+                    {% csrf_token %}
+
+                    {% for field in form %}
+                    <div class="mb-4">
+                        <label class="form-label small fw-bold text-uppercase" style="letter-spacing: 0.1em;">
+                            {{ field.label }}
+                        </label>
+
+                        <div class="minimal-input-wrapper">
+                            {{ field }}
+                        </div>
+
+                        {% if field.errors %}
+                            <div class="mt-1" style="color: #8b0000; font-size: 0.65rem; font-weight: 700; text-transform: uppercase;">
+                                {% for error in field.errors %}
+                                    {{ error|striptags }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+
+                    <button type="submit" class="btn-minimal w-100 mt-3 py-3">
+                        Увійти до системи
+                    </button>
+                </form>
+
+                <div class="mt-5 pt-4 border-top border-dark text-center">
+                    <p class="small text-muted text-uppercase mb-2" style="letter-spacing: 0.05em;">Ще не маєте акаунту?</p>
+                    <a href="{% url 'register' %}" class="fw-bold text-dark text-decoration-none border-bottom border-dark pb-1 small transition-link">
+                        СТВОРИТИ НОВИЙ АКАУНТ
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Стилізація полів вводу, щоб вони відповідали системному дизайну */
+    input[type="text"],
+    input[type="password"],
+    input[type="email"] {
+        width: 100%;
+        padding: 12px 15px;
+        border: 1px solid #000 !important;
+        border-radius: 0 !important;
+        background-color: transparent;
+        font-family: 'Inter', sans-serif;
+        font-size: 0.95rem;
+        transition: all 0.2s ease;
+    }
+
+    input:focus {
+        background-color: #fcfcfc !important;
+        outline: none !important;
+        border-width: 2px !important;
+    }
+
+    .transition-link:hover {
+        color: #666 !important;
+        border-color: #666 !important;
+    }
+
+    /* Адаптація для маленьких екранів */
+    @media (max-width: 576px) {
+        .border-dark {
+            border: none !important;
+            padding: 0 !important;
+        }
+    }
+</style>
+{% endblock %}

@@ -1,0 +1,89 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container-fluid px-0">
+    <div class="d-flex justify-content-between align-items-end p-4 p-lg-5 border-bottom border-dark bg-white">
+        <h1 class="display-6 fw-bold mb-0" style="letter-spacing: -0.02em;">Мої публікації</h1>
+        <a href="{% url 'post_create' %}" class="btn-minimal">
+            + Створити новий пост
+        </a>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table mb-0 border-dark">
+            <thead class="bg-light">
+                <tr class="border-bottom border-dark">
+                    <th class="p-4 fw-bold text-uppercase" style="font-size: 0.7rem; letter-spacing: 0.1em;">Заголовок</th>
+                    <th class="p-4 fw-bold text-uppercase" style="font-size: 0.7rem; letter-spacing: 0.1em;">Категорія</th>
+                    <th class="p-4 fw-bold text-uppercase" style="font-size: 0.7rem; letter-spacing: 0.1em;">Дата</th>
+                    <th class="p-4 fw-bold text-uppercase" style="font-size: 0.7rem; letter-spacing: 0.1em;">Статус</th>
+                    <th class="p-4 fw-bold text-uppercase text-end" style="font-size: 0.7rem; letter-spacing: 0.1em;">Дії</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for post in posts %}
+                <tr class="border-bottom border-dark align-middle">
+                    <td class="p-4">
+                        <a href="{% url 'post_detail' post.pk %}" class="fw-bold text-dark">{{ post.title }}</a>
+                    </td>
+                    <td class="p-4">
+                        <span class="badge border border-dark text-dark fw-normal rounded-0 px-2 py-1" style="font-size: 0.7rem;">
+                            {{ post.category.name }}
+                        </span>
+                    </td>
+                    <td class="p-4 text-muted" style="font-size: 0.85rem;">
+                        {{ post.created_at|date:"d.m.Y" }}
+                    </td>
+                    <td class="p-4">
+                        <span class="text-uppercase fw-bold" style="font-size: 0.65rem; letter-spacing: 0.05em;">
+                            {% if post.status == 'published' %}
+                                &bull; Опубліковано
+                            {% else %}
+                                &bull; Чернетка
+                            {% endif %}
+                        </span>
+                    </td>
+                    <td class="p-4 text-end">
+                        <div class="d-flex justify-content-end gap-3">
+                            <a href="{% url 'post_edit' post.pk %}" class="dash-action">Редагувати</a>
+                            <a href="{% url 'post_delete' post.pk %}" class="dash-action text-muted">Видалити</a>
+                        </div>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5" class="p-5 text-center text-muted">Список порожній</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<style>
+    /* Стилі для дій у таблиці */
+    .dash-action {
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        text-decoration: none !important;
+        border-bottom: 1px solid transparent;
+        transition: border-color 0.3s;
+        color: #000 !important;
+    }
+    .dash-action:hover {
+        border-color: #000;
+    }
+
+    /* Таблиця без стандартних синіх ховерів */
+    .table tbody tr:hover {
+        background-color: #fcfcfc;
+    }
+
+    /* Прибираємо синій колір для всіх бейджів, якщо вони десь вискочать */
+    .badge {
+        background-color: transparent !important;
+    }
+</style>
+{% endblock %}

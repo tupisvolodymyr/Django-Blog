@@ -1,0 +1,88 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container py-5">
+    <nav class="mb-5">
+        <ol class="breadcrumb bg-transparent p-0 m-0" style="font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.15em;">
+            <li class="breadcrumb-item"><a href="{% url 'post_list' %}" class="text-muted">Головна</a></li>
+            <li class="breadcrumb-item active text-dark fw-bold" aria-current="page">{{ post.category.name }}</li>
+        </ol>
+    </nav>
+
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <header class="mb-5">
+                <h1 class="display-4 fw-bold mb-4" style="letter-spacing: -0.03em; line-height: 1;">
+                    {{ post.title }}
+                </h1>
+
+                <div class="d-flex align-items-center pt-3 border-top border-dark">
+                    <span class="text-uppercase small fw-bold me-4" style="letter-spacing: 0.1em;">
+                        Автор: {{ post.author.username }}
+                    </span>
+                    <span class="text-muted small text-uppercase" style="letter-spacing: 0.1em;">
+                        {{ post.created_at|date:"d M Y" }}
+                    </span>
+                </div>
+            </header>
+
+            {% if post.image %}
+            <div class="mb-5 border border-dark p-2 bg-white">
+                <img src="{{ post.image.url }}" class="img-fluid" alt="{{ post.title }}"
+                     style="width: 100%; max-height: 600px; object-fit: cover; filter: grayscale(20%);">
+            </div>
+            {% endif %}
+
+            <div class="post-body">
+                <div class="row">
+                    <div class="col-md-8">
+                        <div class="content" style="font-size: 1.15rem; line-height: 1.8; color: #1a1a1a;">
+                            {{ post.body|linebreaks }}
+                        </div>
+                    </div>
+                    <div class="col-md-4 border-start border-dark ps-md-5 mt-5 mt-md-0">
+                        <div class="sticky-top" style="top: 120px;">
+                            <h5 class="small fw-bold text-uppercase mb-4" style="letter-spacing: 0.1em;">Деталі запису</h5>
+                            <ul class="list-unstyled small text-uppercase" style="letter-spacing: 0.05em; line-height: 2;">
+                                <li><strong>Категорія:</strong> {{ post.category.name }}</li>
+                                <li><strong>Статус:</strong> Опубліковано</li>
+                                <li><strong>ID:</strong> #00{{ post.pk }}</li>
+                            </ul>
+
+                            {% if user == post.author %}
+                            <div class="mt-5 pt-4 border-top border-dark">
+                                <a href="{% url 'post_edit' post.pk %}" class="btn-minimal w-100 text-center">
+                                    Редагувати запис
+                                </a>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Стилізація тексту */
+    .content p {
+        margin-bottom: 2rem;
+    }
+
+    /* Прибираємо синій колір посилань у хлібних крихтах */
+    .breadcrumb-item + .breadcrumb-item::before {
+        content: "/";
+        color: #000;
+    }
+
+    /* Адаптація для фото */
+    @media (max-width: 768px) {
+        .border-start {
+            border-start: none !important;
+            border-top: 1px solid #000;
+            padding-top: 30px;
+        }
+    }
+</style>
+{% endblock %}
