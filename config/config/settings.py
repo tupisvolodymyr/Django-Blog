@@ -16,17 +16,15 @@ from pathlib import Path
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
 
 SECRET_KEY = config("SECRET_KEY")
 
-DEBUG = config("DEBUG", cast=bool)
+#DEBUG = config("DEBUG", cast=bool)
 
-ALLOWED_HOSTS = []
+DEBUG = False
 
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
 
-# Application definition
 
 INSTALLED_APPS = [
     'django.contrib.admin',
