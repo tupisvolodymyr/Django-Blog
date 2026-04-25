@@ -1,0 +1,101 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row mb-5 pb-5 border-bottom border-dark align-items-center">
+        <div class="col-md-3 text-center mb-4 mb-md-0">
+            {% if target_user.profile.avatar %}
+                <img src="{{ target_user.profile.avatar.url }}"
+                     class="border border-dark shadow-sm"
+                     style="width: 160px; height: 160px; object-fit: cover;"
+                     alt="{{ target_user.username }}">
+            {% else %}
+                <div class="border border-dark bg-dark d-inline-block shadow-sm"
+                     style="width: 160px; height: 160px;"></div>
+            {% endif %}
+        </div>
+
+        <div class="col-md-9 ps-md-5">
+            <div class="d-flex align-items-center mb-4 flex-wrap gap-3">
+                <h2 class="fw-black text-uppercase m-0" style="letter-spacing: -1px; font-size: 2rem;">
+                    {{ target_user.username }} </h2>
+
+                {% if user == target_user %}
+                <div class="ms-md-auto d-flex gap-2">
+                    <a href="{% url 'profile_edit' %}" class="btn-minimal px-4">Редагувати профіль</a>
+                    <form action="{% url 'logout' %}" method="post" class="d-inline">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-outline-dark rounded-0 fw-bold small text-uppercase py-2 px-3" style="font-size: 0.7rem; letter-spacing: 1px;">Вийти</button>
+                    </form>
+                </div>
+                {% endif %}
+            </div>
+
+            <div class="d-flex gap-5 mb-4 text-uppercase small fw-bold" style="letter-spacing: 0.1em;">
+                <div><span class="fs-5 fw-black">{{ user_posts.count }}</span> дописів</div>
+                <div><span class="fs-5 fw-black">0</span> підписників</div>
+                <div><span class="fs-5 fw-black">0</span> підписок</div>
+            </div>
+
+            <div class="bio">
+                <p class="fw-bold mb-1 text-uppercase small" style="letter-spacing: 0.05em;">
+                    {{ target_user.first_name }} {{ target_user.last_name }} </p>
+                <p class="text-muted mb-0" style="max-width: 600px; line-height: 1.6;">
+                    {% if target_user.profile.bio %}
+                        {{ target_user.profile.bio|linebreaksbr }} {% else %}
+                        {% if user == target_user %}
+                            Натисніть "Редагувати профіль", щоб додати опис про себе...
+                        {% else %}
+                            Опис відсутній.
+                        {% endif %}
+                    {% endif %}
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-2"> {% for post in user_posts %}
+        <div class="col-4">
+            <a href="{% url 'post_detail' post.pk %}" class="d-block position-relative post-grid-item">
+                {% if post.image %}
+                    <img src="{{ post.image.url }}"
+                         class="img-fluid w-100 grayscale-item border border-dark"
+                         style="aspect-ratio: 1/1; object-fit: cover;"
+                         alt="{{ post.title }}">
+                {% else %}
+                    <div class="bg-light border border-dark d-flex align-items-center justify-content-center"
+                         style="aspect-ratio: 1/1;">
+                        <span class="text-uppercase fw-bold small text-muted">No Media</span>
+                    </div>
+                {% endif %}
+
+                <div class="post-overlay d-flex align-items-center justify-content-center">
+                    <div class="text-center">
+                        <span class="text-white fw-black text-uppercase d-block" style="font-size: 0.7rem;">Переглянути</span>
+                        <div class="bg-white mt-1" style="height: 2px; width: 100%;"></div>
+                    </div>
+                </div>
+            </a>
+        </div>
+        {% empty %}
+        <div class="col-12 text-center py-5 border border-dark border-dashed" style="border-style: dashed !important;">
+            <p class="text-muted text-uppercase fw-bold m-0">Галерея порожня</p>
+            {% if user == target_user %}
+                <a href="{% url 'post_new' %}" class="small text-dark fw-bold border-bottom border-dark mt-2 d-inline-block">Створити перший запис</a>
+            {% endif %}
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<style>
+    .post-grid-item { overflow: hidden; background: #000; transition: transform 0.3s ease; }
+    .grayscale-item { transition: all 0.5s ease; filter: grayscale(100%); }
+    .post-grid-item:hover .grayscale-item { filter: grayscale(0%); opacity: 0.7; transform: scale(1.05); }
+    .post-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); opacity: 0; transition: opacity 0.3s ease; z-index: 2; }
+    .post-grid-item:hover .post-overlay { opacity: 1; }
+    .fw-black { font-weight: 900; }
+    .btn-minimal { background-color: #000; color: #fff !important; border: none; padding: 10px 20px; font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; text-decoration: none; display: inline-block; }
+    .btn-minimal:hover { background-color: #333; color: #fff !important; }
+</style>
+{% endblock %}

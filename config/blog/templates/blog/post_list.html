@@ -2,26 +2,28 @@
 
 {% block content %}
 <div class="container-fluid px-0">
-    <div class="row g-0 border-top border-dark">
-        {% for post in posts %}
-        <div class="col-md-6 col-lg-4 border-end border-bottom border-dark">
-            <div class="post-card h-100 bg-white">
+    <div class="row g-0 border-top border-dark d-flex align-items-stretch">
+        {% for post in page_obj %}
+        <div class="col-md-6 col-lg-4 border-end border-bottom border-dark d-flex">
+            <div class="post-card d-flex flex-column bg-white w-100">
 
                 {% if post.image %}
                     <div class="border-bottom border-dark overflow-hidden">
                         <a href="{% url 'post_detail' post.pk %}">
                             <img src="{{ post.image.url }}" class="img-fluid post-img" alt="{{ post.title }}"
-                                 style="width: 100%; height: 400px; object-fit: cover; transition: 0.5s;">
+                                 style="width: 100%; height: 350px; object-fit: cover; transition: 0.5s;">
                         </a>
                     </div>
                 {% endif %}
 
-                <div class="p-4 p-lg-5">
+                <div class="p-4 p-lg-5 d-flex flex-column flex-grow-1">
                     <div class="d-flex justify-content-between align-items-center mb-2">
                         <span style="font-size: 0.6rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.15em; color: #666;">
                             {{ post.category.name }}
                         </span>
-                        <span style="font-size: 0.65rem; font-weight: 600;">№0{{ forloop.counter }}</span>
+                        <span style="font-size: 0.65rem; font-weight: 600;">
+                            №{{ page_obj.start_index|add:forloop.counter0 }}
+                        </span>
                     </div>
 
                     <div class="mb-3" style="font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.05em; color: #999;">
@@ -29,7 +31,7 @@
                     </div>
 
                     <h2 class="h4 mb-4">
-                        <a href="{% url 'post_detail' post.pk %}" class="text-dark fw-bold" style="letter-spacing: -0.01em; line-height: 1.2;">
+                        <a href="{% url 'post_detail' post.pk %}" class="text-dark fw-black" style="letter-spacing: -0.01em; line-height: 1.2; text-transform: uppercase; text-decoration: none;">
                             {{ post.title }}
                         </a>
                     </h2>
@@ -38,9 +40,30 @@
                         {{ post.body|truncatewords:15 }}
                     </p>
 
-                    <a href="{% url 'post_detail' post.pk %}" class="btn-read">
-                        ЧИТАТИ ПОВНІСТЮ &rarr;
-                    </a>
+                    <div class="mt-auto pt-4 d-flex justify-content-between align-items-center border-top border-dark">
+                        <a href="{% url 'post_detail' post.pk %}" class="btn-read">
+                            ЧИТАТИ &rarr;
+                        </a>
+
+                        <div class="d-flex align-items-center gap-3">
+                            <a href="{% url 'post_detail' post.pk %}#comments" class="system-action-link" title="Перейти до коментарів">
+                                <span class="system-icon" style="font-size: 1.2rem;">🗨</span>
+                                <span class="system-count">{{ post.comments.count }}</span>
+                            </a>
+
+                            <form action="{% url 'like_post' post.pk %}" method="POST" class="m-0">
+                                {% csrf_token %}
+                                <button type="submit" class="system-action-link border-0 bg-transparent p-0">
+                                    {% if user in post.likes.all %}
+                                        <span class="system-icon">♥</span>
+                                    {% else %}
+                                        <span class="system-icon">♡</span>
+                                    {% endif %}
+                                    <span class="system-count">{{ post.likes.count }}</span>
+                                </button>
+                            </form>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -50,19 +73,47 @@
         </div>
         {% endfor %}
     </div>
+
+    {% if page_obj.has_other_pages %}
+    <div class="pagination-wrapper py-5 bg-white border-bottom border-dark">
+        <nav class="d-flex justify-content-center align-items-center gap-2">
+            {% if page_obj.has_previous %}
+                <a class="btn-outline-dark rounded-0 px-4 d-flex align-items-center"
+                   href="?page={{ page_obj.previous_page_number }}" style="height: 40px; font-size: 0.7rem; font-weight: 700; letter-spacing: 0.1em; text-decoration: none;">
+                   &larr; НАЗАД
+                </a>
+            {% endif %}
+            <div class="d-flex gap-1">
+                {% for num in page_obj.paginator.page_range %}
+                    {% if page_obj.number == num %}
+                        <span class="btn-minimal px-3 d-flex align-items-center" style="height: 40px; font-size: 0.7rem;">{{ num }}</span>
+                    {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                        <a class="btn-outline-dark rounded-0 px-3 d-flex align-items-center"
+                           href="?page={{ num }}" style="height: 40px; font-size: 0.7rem; text-decoration: none;">{{ num }}</a>
+                    {% endif %}
+                {% endfor %}
+            </div>
+            {% if page_obj.has_next %}
+                <a class="btn-outline-dark rounded-0 px-4 d-flex align-items-center"
+                   href="?page={{ page_obj.next_page_number }}" style="height: 40px; font-size: 0.7rem; font-weight: 700; letter-spacing: 0.1em; text-decoration: none;">
+                   ВПЕРЕД &rarr;
+                </a>
+            {% endif %}
+        </nav>
+    </div>
+    {% endif %}
 </div>
 
 <style>
-    /* Анімації та ховери */
+    .fw-black { font-weight: 900; }
+
+    /* Ефекти карток */
     .post-card { transition: background-color 0.3s ease; }
     .post-card:hover { background-color: #fcfcfc; }
+    .post-img { filter: grayscale(100%); transition: 0.5s; }
+    .post-card:hover .post-img { filter: grayscale(0%); transform: scale(1.02); }
 
-    .post-img { filter: grayscale(100%); }
-    .post-card:hover .post-img {
-        filter: grayscale(0%);
-        transform: scale(1.05);
-    }
-
+    /* Кнопка Читати */
     .btn-read {
         font-size: 0.65rem;
         font-weight: 800;
@@ -70,10 +121,35 @@
         letter-spacing: 0.1em;
         border-bottom: 2px solid #000;
         padding-bottom: 5px;
-        transition: padding-left 0.3s ease;
+        color: #000 !important;
+        text-decoration: none !important;
+        transition: padding-left 0.2s ease;
+    }
+    .btn-read:hover { padding-left: 10px; }
+
+    /* Системні дії (Лайк / Комент) */
+    .system-action-link {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        text-decoration: none !important;
+        color: #000 !important;
+        transition: transform 0.2s ease;
+        cursor: pointer;
+    }
+    .system-action-link:hover { transform: translateY(-2px); }
+
+    .system-icon {
+        font-size: 1.2rem;
+        line-height: 1;
         display: inline-block;
     }
+    .system-count {
+        font-size: 0.75rem;
+        font-weight: 900;
+        color: #000;
+    }
 
-    .btn-read:hover { padding-left: 10px; }
+    .pagination-wrapper { background-color: #ffffff; }
 </style>
 {% endblock %}

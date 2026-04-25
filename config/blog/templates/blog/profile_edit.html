@@ -1,0 +1,128 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <form method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+
+                <div class="border border-dark bg-white shadow-sm overflow-hidden">
+                    <div class="row g-0">
+
+                        <div class="col-md-4 border-end border-dark bg-light p-4 p-md-5 text-center">
+                            <label class="fw-bold text-uppercase small d-block mb-4" style="letter-spacing: 0.1em;">Фото профілю</label>
+
+                            <div class="position-relative d-inline-block mb-4">
+                                {% if user.profile.avatar %}
+                                    <img src="{{ user.profile.avatar.url }}"
+                                         class="border border-dark shadow-sm"
+                                         style="width: 180px; height: 180px; object-fit: cover;"
+                                         id="avatar-preview">
+                                {% else %}
+                                    <div class="border border-dark bg-dark shadow-sm"
+                                         style="width: 180px; height: 180px;" id="avatar-preview"></div>
+                                {% endif %}
+
+                                <div class="avatar-input-overlay">
+                                    {{ p_form.avatar }}
+                                </div>
+                            </div>
+
+                            <p class="text-muted small text-uppercase fw-bold mb-4" style="font-size: 0.6rem;">
+                                Натисніть на фото або кнопку нижче, щоб оновити
+                            </p>
+
+                            <button type="button" class="btn btn-outline-dark rounded-0 fw-bold w-100 py-2 text-uppercase small"
+                                    onclick="document.querySelector('input[type=file]').click();" style="font-size: 0.7rem;">
+                                Вибрати файл
+                            </button>
+                        </div>
+
+                        <div class="col-md-8 p-4 p-md-5">
+                            <h2 class="fw-black text-uppercase mb-5" style="letter-spacing: -1px; font-size: 1.8rem;">
+                                Налаштування
+                            </h2>
+
+                            <div class="mb-4">
+                                <label class="fw-bold text-uppercase small d-block mb-2" style="letter-spacing: 0.1em;">Логін</label>
+                                <div class="input-group-minimal">
+                                    {{ u_form.username }}
+                                </div>
+                            </div>
+
+                            <div class="mb-4">
+                                <label class="fw-bold text-uppercase small d-block mb-2" style="letter-spacing: 0.1em;">Email</label>
+                                <div class="input-group-minimal">
+                                    {{ u_form.email }}
+                                </div>
+                            </div>
+
+                            <div class="mb-5">
+                                <label class="fw-bold text-uppercase small d-block mb-2" style="letter-spacing: 0.1em;">Про себе (Bio)</label>
+                                <div class="input-group-minimal">
+                                    {{ p_form.bio }}
+                                </div>
+                            </div>
+
+                            <div class="row g-2 pt-3 border-top border-dark">
+                                <div class="col-6">
+                                    <button type="submit" class="btn-minimal w-100 text-center py-3">Зберегти зміни</button>
+                                </div>
+                                <div class="col-6">
+                                    <a href="{% url 'profile' user.pk %}" class="btn btn-outline-dark rounded-0 fw-bold w-100 py-3 text-uppercase d-flex align-items-center justify-content-center" style="font-size: 0.7rem; height: 100%;">
+                                        Скасувати
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Скрипт для миттєвого перегляду обраного фото
+    document.querySelector('input[type=file]').onchange = function (evt) {
+        const [file] = this.files;
+        if (file) {
+            const preview = document.getElementById('avatar-preview');
+            if (preview.tagName === 'IMG') {
+                preview.src = URL.createObjectURL(file);
+            } else {
+                const img = document.createElement('img');
+                img.src = URL.createObjectURL(file);
+                img.className = preview.className;
+                img.style = preview.style.cssText;
+                img.id = 'avatar-preview';
+                preview.replaceWith(img);
+            }
+        }
+    }
+</script>
+
+<style>
+    .input-group-minimal { border: 1px solid #000; padding: 12px 15px; background: #fff; }
+    input[type="text"], input[type="email"], textarea {
+        width: 100% !important; border: none !important; background: transparent !important;
+        outline: none !important; font-size: 1rem;
+    }
+    textarea { min-height: 150px; resize: none; }
+    .avatar-input-overlay {
+        position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+        opacity: 0; cursor: pointer; z-index: 10;
+    }
+    .avatar-input-overlay input { width: 100%; height: 100%; cursor: pointer; }
+    #avatar-preview { transition: opacity 0.3s ease; }
+    .fw-black { font-weight: 900; }
+    .btn-minimal {
+        background: #000; color: #fff; border: 1px solid #000;
+        text-transform: uppercase; font-weight: bold; font-size: 0.7rem; letter-spacing: 0.1em;
+        transition: all 0.2s ease;
+    }
+    .btn-minimal:hover { background: #333; color: #fff; }
+</style>
+{% endblock %}

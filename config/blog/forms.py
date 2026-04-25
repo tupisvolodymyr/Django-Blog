@@ -1,5 +1,6 @@
 from django import forms
-from .models import Post
+from django.contrib.auth.models import User
+from .models import Post, Profile, Comment
 
 
 class PostForm(forms.ModelForm):
@@ -7,8 +8,42 @@ class PostForm(forms.ModelForm):
         model = Post
         fields = ['title', 'category', 'body', 'status', 'image']
         widgets = {
-            'title': forms.TextInput(attrs={'class': 'form-control'}),
-            'category': forms.Select(attrs={'class': 'form-select'}),
-            'body': forms.Textarea(attrs={'class': 'form-control', 'rows': 5}),
-            'status': forms.Select(attrs={'class': 'form-select'}),
+            'title': forms.TextInput(attrs={'placeholder': 'НАЗВА ЗАПИСУ...'}),
+            'category': forms.Select(),
+            'body': forms.Textarea(attrs={'placeholder': 'ТЕКСТ...', 'rows': 5}),
+            'status': forms.Select(),
+            'image': forms.FileInput(),
+        }
+
+        def __init__(self, *args, **kwargs):
+            super().__init__(*args, **kwargs)
+            self.fields['image'].required = True
+            self.fields['image'].help_text = ""
+            self.fields['title'].label = "ЗАГОЛОВОК"
+            self.fields['category'].label = "КАТЕГОРІЯ"
+            self.fields['body'].label = "ЗМІСТ"
+            self.fields['status'].label = "СТАТУС"
+            self.fields['image'].label = "ОБКАЛАДИНКА (ОБОВ'ЯЗКОВО)"
+
+class UserUpdateForm(forms.ModelForm):
+    class Meta:
+        model = User
+        fields = ['username', 'email']
+
+class ProfileUpdateForm(forms.ModelForm):
+    class Meta:
+        model = Profile
+        fields = ['avatar', 'bio']
+
+class CommentForm(forms.ModelForm):
+    class Meta:
+        model = Comment
+        fields = ['body']
+        widgets = {
+            'body': forms.Textarea(attrs={
+                'placeholder': 'НАПИШІТЬ КОМЕНТАР...',
+                'class': 'border-1 w-100 p-3',
+                'rows': 3,
+                'style': 'border: 1px solid #000; outline: none;'
+            }),
         }

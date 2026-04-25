@@ -4,7 +4,7 @@
 <div class="container py-5">
     <nav class="mb-5">
         <ol class="breadcrumb bg-transparent p-0 m-0" style="font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.15em;">
-            <li class="breadcrumb-item"><a href="{% url 'post_list' %}" class="text-muted">Головна</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'post_list' %}" class="text-muted text-decoration-none">Головна</a></li>
             <li class="breadcrumb-item active text-dark fw-bold" aria-current="page">{{ post.category.name }}</li>
         </ol>
     </nav>
@@ -12,24 +12,40 @@
     <div class="row justify-content-center">
         <div class="col-lg-10">
             <header class="mb-5">
-                <h1 class="display-4 fw-bold mb-4" style="letter-spacing: -0.03em; line-height: 1;">
+                <h1 class="display-4 fw-black mb-4" style="letter-spacing: -0.03em; line-height: 1; text-transform: uppercase;">
                     {{ post.title }}
                 </h1>
 
                 <div class="d-flex align-items-center pt-3 border-top border-dark">
-                    <span class="text-uppercase small fw-bold me-4" style="letter-spacing: 0.1em;">
-                        Автор: {{ post.author.username }}
-                    </span>
-                    <span class="text-muted small text-uppercase" style="letter-spacing: 0.1em;">
-                        {{ post.created_at|date:"d M Y" }}
-                    </span>
+                    <a href="{% url 'profile' post.author.pk %}" class="me-3 text-decoration-none">
+                        {% if post.author.profile.avatar %}
+                            <img src="{{ post.author.profile.avatar.url }}"
+                                 class="border border-dark rounded-0"
+                                 style="width: 45px; height: 45px; object-fit: cover;"
+                                 alt="{{ post.author.username }}">
+                        {% else %}
+                            <div class="border border-dark bg-dark rounded-0 d-flex align-items-center justify-content-center text-white fw-bold"
+                                 style="width: 45px; height: 45px; font-size: 0.9rem;">
+                                {{ post.author.username|slice:":1"|upper }}
+                            </div>
+                        {% endif %}
+                    </a>
+
+                    <div class="d-flex flex-column">
+                        <span class="text-uppercase small fw-bold" style="letter-spacing: 0.1em;">
+                            Автор: <a href="{% url 'profile' post.author.pk %}" class="text-dark border-bottom border-dark text-decoration-none">{{ post.author.username }}</a>
+                        </span>
+                        <span class="text-muted small text-uppercase" style="letter-spacing: 0.1em;">
+                            {{ post.created_at|date:"d M Y" }}
+                        </span>
+                    </div>
                 </div>
             </header>
 
             {% if post.image %}
-            <div class="mb-5 border border-dark p-2 bg-white">
+            <div class="mb-5 border border-dark p-2 bg-white shadow-sm">
                 <img src="{{ post.image.url }}" class="img-fluid" alt="{{ post.title }}"
-                     style="width: 100%; max-height: 600px; object-fit: cover; filter: grayscale(20%);">
+                     style="width: 100%; max-height: 600px; object-fit: cover; filter: grayscale(10%);">
             </div>
             {% endif %}
 
@@ -39,21 +55,117 @@
                         <div class="content" style="font-size: 1.15rem; line-height: 1.8; color: #1a1a1a;">
                             {{ post.body|linebreaks }}
                         </div>
+
+                        <div class="py-4 border-top border-dark mt-5">
+                            <form action="{% url 'like_post' post.pk %}" method="POST" class="d-inline">
+                                {% csrf_token %}
+                                <button type="submit" class="btn {% if liked %}btn-dark{% else %}btn-outline-dark{% endif %} px-4 fw-bold rounded-0"
+                                        style="height: 40px; text-transform: uppercase; font-size: 0.7rem; letter-spacing: 0.1em;">
+                                    {% if liked %}♥ ЛАЙКНУТО{% else %}♡ ЛАЙК{% endif %} | {{ total_likes }}
+                                </button>
+                            </form>
+                        </div>
+
+                        <div class="mt-5 pt-5 border-top border-dark" id="comments">
+                            <h5 class="fw-black text-uppercase mb-4" style="letter-spacing: 0.1em;">Коментарі ({{ comments.count }})</h5>
+
+                            {% if user.is_authenticated %}
+                                <div class="mb-5 p-4 border border-dark bg-white rounded-0">
+                                    <form method="post">
+                                        {% csrf_token %}
+                                        <div class="mb-3">
+                                            {{ form.body }}
+                                        </div>
+                                        <button type="submit" class="btn btn-dark w-100 rounded-0 fw-bold py-2" style="letter-spacing: 0.2em; font-size: 0.75rem;">
+                                            ОПУБЛІКУВАТИ
+                                        </button>
+                                    </form>
+                                </div>
+                            {% else %}
+                                <p class="small text-uppercase text-muted border p-3 border-dark bg-light rounded-0">
+                                    <a href="{% url 'login' %}" class="text-dark fw-bold">Увійдіть</a>, щоб залишити коментар.
+                                </p>
+                            {% endif %}
+
+                            <div class="comment-list mt-4">
+                                {% for comment in comments %}
+                                    <div class="d-flex gap-3 mb-4 pb-4 border-bottom border-light">
+                                        <div class="flex-shrink-0">
+                                            <a href="{% url 'profile' comment.author.pk %}">
+                                                {% if comment.author.profile.avatar %}
+                                                    <img src="{{ comment.author.profile.avatar.url }}"
+                                                         class="rounded-0 border border-dark"
+                                                         style="width: 40px; height: 40px; object-fit: cover;">
+                                                {% else %}
+                                                    <div class="rounded-0 bg-dark d-flex align-items-center justify-content-center text-white"
+                                                         style="width: 40px; height: 40px; font-size: 0.8rem; font-weight: 700;">
+                                                        {{ comment.author.username|slice:":1"|upper }}
+                                                    </div>
+                                                {% endif %}
+                                            </a>
+                                        </div>
+
+                                        <div class="flex-grow-1">
+                                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                                <span class="fw-bold text-uppercase" style="font-size: 0.75rem; letter-spacing: 0.05em;">
+                                                    <a href="{% url 'profile' comment.author.pk %}" class="text-dark text-decoration-none border-bottom border-dark">
+                                                        {{ comment.author.username }}
+                                                    </a>
+                                                </span>
+
+                                                <div class="d-flex align-items-center gap-2">
+                                                    <span class="text-muted" style="font-size: 0.65rem;">
+                                                        {{ comment.created_at|date:"d.m.Y H:i" }}
+                                                    </span>
+
+                                                    {% if user == comment.author %}
+                                                        <div class="d-flex gap-1 ms-2">
+                                                            <a href="{% url 'comment_edit' comment.pk %}" class="action-btn" title="Редагувати">
+                                                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="square" stroke-linejoin="arcs"><path d="M20 14.66V20a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h5.34"></path><polygon points="18 2 22 6 12 16 8 16 8 12 18 2"></polygon></svg>
+                                                            </a>
+                                                            <form action="{% url 'comment_delete' comment.pk %}" method="post" onsubmit="return confirm('Видалити цей коментар?');" class="m-0">
+                                                                {% csrf_token %}
+                                                                <button type="submit" class="action-btn action-btn-danger" title="Видалити">
+                                                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="square" stroke-linejoin="arcs"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
+                                                                </button>
+                                                            </form>
+                                                        </div>
+                                                    {% endif %}
+                                                </div>
+                                            </div>
+                                            <div class="comment-body" style="font-size: 0.95rem; line-height: 1.6; color: #333;">
+                                                {{ comment.body|linebreaks }}
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% empty %}
+                                    <p class="text-muted text-uppercase small" style="letter-spacing: 0.1em;">Коментарів поки немає.</p>
+                                {% endfor %}
+                            </div>
+                        </div>
                     </div>
+
                     <div class="col-md-4 border-start border-dark ps-md-5 mt-5 mt-md-0">
                         <div class="sticky-top" style="top: 120px;">
-                            <h5 class="small fw-bold text-uppercase mb-4" style="letter-spacing: 0.1em;">Деталі запису</h5>
+                            <h5 class="small fw-black text-uppercase mb-4" style="letter-spacing: 0.1em;">Деталі запису</h5>
                             <ul class="list-unstyled small text-uppercase" style="letter-spacing: 0.05em; line-height: 2;">
-                                <li><strong>Категорія:</strong> {{ post.category.name }}</li>
-                                <li><strong>Статус:</strong> Опубліковано</li>
-                                <li><strong>ID:</strong> #00{{ post.pk }}</li>
+                                <li class="mb-1"><strong>Категорія:</strong> {{ post.category.name }}</li>
+                                <li class="mb-1"><strong>Статус:</strong> Опубліковано</li>
+                                <li class="mb-1"><strong>ID:</strong> #00{{ post.pk }}</li>
                             </ul>
 
                             {% if user == post.author %}
-                            <div class="mt-5 pt-4 border-top border-dark">
-                                <a href="{% url 'post_edit' post.pk %}" class="btn-minimal w-100 text-center">
+                            <div class="mt-5 pt-4 border-top border-dark d-flex flex-column gap-2">
+                                <a href="{% url 'post_edit' post.pk %}" class="btn-minimal text-center text-decoration-none rounded-0">
                                     Редагувати запис
                                 </a>
+                                <form action="{% url 'post_delete' post.pk %}" method="post"
+                                      onsubmit="return confirm('Ви впевнені, що хочете видалити цей запис?');" class="w-100">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn-delete-danger w-100 rounded-0">
+                                        Видалити запис
+                                    </button>
+                                </form>
                             </div>
                             {% endif %}
                         </div>
@@ -65,23 +177,93 @@
 </div>
 
 <style>
-    /* Стилізація тексту */
-    .content p {
-        margin-bottom: 2rem;
-    }
+    .fw-black { font-weight: 900; }
+    .content p { margin-bottom: 2rem; }
+    .breadcrumb-item + .breadcrumb-item::before { content: "/"; color: #000; }
 
-    /* Прибираємо синій колір посилань у хлібних крихтах */
-    .breadcrumb-item + .breadcrumb-item::before {
-        content: "/";
+    /* Кнопки дій у коментарях */
+    .action-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 26px;
+        height: 26px;
+        border: 1px solid #000;
+        background: #fff;
         color: #000;
+        transition: all 0.2s ease;
+        cursor: pointer;
+        padding: 0;
     }
 
-    /* Адаптація для фото */
+    .action-btn:hover {
+        background: #000;
+        color: #fff;
+    }
+
+    .action-btn-danger {
+        border-color: #dc3545;
+        color: #dc3545;
+    }
+
+    .action-btn-danger:hover {
+        background: #dc3545;
+        border-color: #dc3545;
+        color: #fff;
+    }
+
+    .btn-minimal {
+        display: block;
+        padding: 10px 20px;
+        background-color: #000;
+        color: #fff !important;
+        border: 2px solid #000;
+        border-radius: 0;
+        font-size: 0.7rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.15em;
+        transition: all 0.2s ease;
+    }
+    .btn-minimal:hover {
+        background-color: transparent;
+        color: #000 !important;
+    }
+
+    textarea {
+        width: 100% !important;
+        border: 1px solid #000 !important;
+        padding: 15px !important;
+        border-radius: 0 !important;
+        font-size: 0.9rem;
+        outline: none !important;
+        transition: background-color 0.2s;
+    }
+    textarea:focus { background-color: #fcfcfc; }
+
+    .btn-delete-danger {
+        height: 40px;
+        background-color: transparent;
+        color: #dc3545 !important;
+        border: 2px solid #dc3545 !important;
+        border-radius: 0;
+        font-size: 0.7rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        transition: all 0.2s ease;
+    }
+    .btn-delete-danger:hover {
+        background-color: #dc3545 !important;
+        color: #ffffff !important;
+    }
+
     @media (max-width: 768px) {
         .border-start {
-            border-start: none !important;
+            border-left: none !important;
             border-top: 1px solid #000;
             padding-top: 30px;
+            margin-top: 40px !important;
         }
     }
 </style>

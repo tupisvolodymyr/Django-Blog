@@ -1,0 +1,102 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <nav class="mb-5">
+                <ol class="breadcrumb bg-transparent p-0 m-0" style="font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.15em;">
+                    <li class="breadcrumb-item"><a href="{% url 'post_detail' comment.post.pk %}" class="text-muted text-decoration-none">Назад до запису</a></li>
+                    <li class="breadcrumb-item active text-dark fw-bold" aria-current="page">Редагування коментаря</li>
+                </ol>
+            </nav>
+
+            <div class="border border-dark bg-white shadow-sm overflow-hidden">
+                <div class="p-4 p-md-5">
+                    <header class="mb-5 pb-3 border-bottom border-dark">
+                        <h2 class="fw-black text-uppercase m-0" style="letter-spacing: -1px; font-size: 1.8rem;">
+                            Редагувати відгук
+                        </h2>
+                        <p class="text-muted small text-uppercase mt-2" style="letter-spacing: 0.1em;">
+                            Ваш коментар до: <span class="text-dark fw-bold">{{ comment.post.title }}</span>
+                        </p>
+                    </header>
+
+                    <form method="POST">
+                        {% csrf_token %}
+                        
+                        <div class="mb-4">
+                            <label class="fw-bold text-uppercase small d-block mb-3" style="letter-spacing: 0.1em;">Текст коментаря</label>
+                            <textarea name="body" class="form-control-custom" required>{{ comment.body }}</textarea>
+                        </div>
+
+                        <div class="row g-2 pt-4 border-top border-dark mt-5">
+                            <div class="col-md-6">
+                                <button type="submit" class="btn-minimal w-100 py-3">Зберегти зміни</button>
+                            </div>
+                            <div class="col-md-6">
+                                <a href="{% url 'post_detail' comment.post.pk %}" 
+                                   class="btn btn-outline-dark rounded-0 fw-bold w-100 py-3 text-uppercase d-flex align-items-center justify-content-center" 
+                                   style="font-size: 0.7rem; height: 100%;">
+                                    Скасувати
+                                </a>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div class="mt-4 p-3 bg-light border border-dark small text-uppercase" style="letter-spacing: 0.05em; font-size: 0.65rem;">
+                <strong>Примітка:</strong> редагуючи цей коментар, ви змінюєте його зміст для всіх користувачів. Дата створення залишиться незмінною.
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .fw-black { font-weight: 900; }
+    
+    /* Стиль текстового поля */
+    .form-control-custom {
+        width: 100% !important;
+        border: 1px solid #000 !important;
+        padding: 20px !important;
+        border-radius: 0 !important;
+        font-size: 1rem;
+        min-height: 200px;
+        outline: none !important;
+        transition: background-color 0.2s;
+        line-height: 1.6;
+        background-color: #ffffff;
+    }
+    
+    .form-control-custom:focus {
+        background-color: #fcfcfc;
+        border-width: 2px !important;
+    }
+
+    /* Системна кнопка */
+    .btn-minimal {
+        background: #000;
+        color: #fff !important;
+        border: 1px solid #000;
+        text-transform: uppercase;
+        font-weight: 800;
+        font-size: 0.7rem;
+        letter-spacing: 0.15em;
+        transition: all 0.2s ease;
+        display: block;
+        text-decoration: none;
+    }
+
+    .btn-minimal:hover {
+        background: #333;
+        color: #fff !important;
+    }
+
+    .breadcrumb-item + .breadcrumb-item::before { 
+        content: "/"; 
+        color: #000; 
+    }
+</style>
+{% endblock %}

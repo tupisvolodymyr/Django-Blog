@@ -4,8 +4,8 @@
 <div class="container py-5">
     <div class="row justify-content-center">
         <div class="col-lg-8">
-            <div class="border border-dark bg-white p-4 p-md-5">
-                <h1 class="h2 fw-bold mb-5 text-uppercase" style="letter-spacing: -0.02em;">
+            <div class="border border-dark bg-white p-4 p-md-5 shadow-sm">
+                <h1 class="h2 fw-black mb-5 text-uppercase" style="letter-spacing: -0.02em;">
                     {% if form.instance.pk %}Редагування{% else %}Новий запис{% endif %}
                 </h1>
 
@@ -19,7 +19,7 @@
                         </label>
 
                         {% if field.name == 'image' %}
-                            <div class="custom-file-upload border border-dark p-3 text-center">
+                            <div class="custom-file-upload border border-dark p-3 bg-light">
                                 {{ field }}
                             </div>
                         {% else %}
@@ -29,7 +29,7 @@
                         {% endif %}
 
                         {% if field.errors %}
-                            <div class="text-danger small mt-1">
+                            <div class="text-danger small mt-1 fw-bold text-uppercase" style="font-size: 0.65rem;">
                                 {{ field.errors }}
                             </div>
                         {% endif %}
@@ -37,9 +37,10 @@
                     {% endfor %}
 
                     <div class="d-flex justify-content-between align-items-center mt-5 pt-4 border-top border-dark">
-                        <a href="{% url 'user_dashboard' %}" class="text-dark text-uppercase small fw-bold text-decoration-none border-bottom border-dark pb-1">
+                        <a href="{% url 'profile' %}" class="text-dark text-uppercase small fw-bold text-decoration-none border-bottom border-dark pb-1">
                             &larr; Скасувати
                         </a>
+
                         <button type="submit" class="btn-minimal">
                             Зберегти запис
                         </button>
@@ -51,7 +52,7 @@
 </div>
 
 <style>
-    /* Стилізація стандартних полів Django */
+    /* Стилізація полів під твій системний дизайн */
     input[type="text"],
     input[type="email"],
     textarea,
@@ -63,31 +64,24 @@
         font-family: 'Inter', sans-serif;
         font-size: 0.95rem;
         background-color: transparent;
-        transition: background-color 0.3s;
+        outline: none !important;
     }
 
     input:focus, textarea:focus, select:focus {
         background-color: #fcfcfc !important;
-        outline: none !important;
-        box-shadow: none !important;
     }
 
     textarea {
-        min-height: 200px;
+        min-height: 250px;
         resize: vertical;
     }
 
-    /* Стилізація блоку завантаження фото */
-    .custom-file-upload input {
-        font-size: 0.8rem;
+    /* Приховуємо стандартне сміття Django */
+    .helptext {
+        display: none !important;
     }
 
-    /* Видаляємо сині кнопки Bootstrap, якщо вони прийшли з форми */
-    .btn-primary {
-        display: none;
-    }
-
-    /* Для селектів прибираємо стандартну стрілочку, якщо потрібно ще більше мінімалізму */
+    /* Стилізація селектів (категорій) */
     select {
         appearance: none;
         background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
@@ -95,5 +89,7 @@
         background-position: right 1rem center;
         background-size: 1em;
     }
+
+    .fw-black { font-weight: 900; }
 </style>
 {% endblock %}
