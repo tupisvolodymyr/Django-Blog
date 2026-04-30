@@ -2,7 +2,6 @@ from django import forms
 from django.contrib.auth.models import User
 from .models import Post, Profile, Comment
 
-
 class PostForm(forms.ModelForm):
     class Meta:
         model = Post
@@ -15,15 +14,16 @@ class PostForm(forms.ModelForm):
             'image': forms.FileInput(),
         }
 
-        def __init__(self, *args, **kwargs):
-            super().__init__(*args, **kwargs)
-            self.fields['image'].required = True
-            self.fields['image'].help_text = ""
-            self.fields['title'].label = "ЗАГОЛОВОК"
-            self.fields['category'].label = "КАТЕГОРІЯ"
-            self.fields['body'].label = "ЗМІСТ"
-            self.fields['status'].label = "СТАТУС"
-            self.fields['image'].label = "ОБКАЛАДИНКА (ОБОВ'ЯЗКОВО)"
+    # Виносимо __init__ з Meta сюди
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['image'].required = True
+        self.fields['image'].help_text = ""
+        self.fields['title'].label = "TITLE"
+        self.fields['category'].label = "CATEGORY"
+        self.fields['body'].label = "DESCRIPTION"  # Замінили BODY/ЗМІСТ на DESCRIPTION
+        self.fields['status'].label = "STATUS"
+        self.fields['image'].label = "IMAGE (REQUIRED)"
 
 class UserUpdateForm(forms.ModelForm):
     class Meta:
