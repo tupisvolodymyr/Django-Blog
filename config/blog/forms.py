@@ -14,14 +14,14 @@ class PostForm(forms.ModelForm):
             'image': forms.FileInput(),
         }
 
-    # Виносимо __init__ з Meta сюди
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['image'].required = True
         self.fields['image'].help_text = ""
         self.fields['title'].label = "TITLE"
         self.fields['category'].label = "CATEGORY"
-        self.fields['body'].label = "DESCRIPTION"  # Замінили BODY/ЗМІСТ на DESCRIPTION
+        self.fields['body'].label = "DESCRIPTION"
         self.fields['status'].label = "STATUS"
         self.fields['image'].label = "IMAGE (REQUIRED)"
 
